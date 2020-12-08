@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_07_213119) do
+ActiveRecord::Schema.define(version: 2020_12_08_113445) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,15 @@ ActiveRecord::Schema.define(version: 2020_12_07_213119) do
     t.string "password_digest"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.decimal "budget", default: "5.0"
+    t.boolean "approved", default: false
+    t.boolean "banned", default: false
+    t.boolean "deleted", default: false
+    t.boolean "mail_activated", default: false
+    t.boolean "sms_activated", default: false
+    t.integer "role", default: 1
+    t.boolean "admin", default: false
+    t.decimal "freezed_budget"
   end
 
   add_foreign_key "answers", "questions"

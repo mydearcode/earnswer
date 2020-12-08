@@ -21,7 +21,10 @@ class QuestionsController < ApplicationController
     @question = current_user.questions.new(question_params)
 
     if @question.save
+        @question.user.freezed_budget.increment!(@question.reward)
+      @question.user.budget.decrement!(@question.reward)
       render json: @question, status: :created, location: @question
+      
     else
       render json: @question.errors, status: :unprocessable_entity
     end
@@ -55,4 +58,18 @@ class QuestionsController < ApplicationController
     def question_params
       params.require(:question).permit(:title, :description, :reward, :approved, :reviewed, :solved, :finished, :deleted, :references)
     end
+    
+    def increment(attribute, by = 0.0)
+        self[attribute] ||= 0
+        self[attribute] += by
+        self
+    end
+    
+    def decrement(attribute, by = 0.0)
+        self[attribute] ||= 0
+        self[attribute] -= by
+        self
+    end
+    
+    
 end
