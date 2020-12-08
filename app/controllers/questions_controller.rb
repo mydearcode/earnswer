@@ -21,8 +21,8 @@ class QuestionsController < ApplicationController
     @question = current_user.questions.new(question_params)
 
     if @question.save
-        @question.user.freezed_budget.increment!(@question.reward)
-      @question.user.budget.decrement!(@question.reward)
+        @question.user.increment!(:freezed_budget, @question.reward)
+      @question.user.decrement!(:budget, @question.reward)
       render json: @question, status: :created, location: @question
       
     else
@@ -39,9 +39,21 @@ class QuestionsController < ApplicationController
     end
   end
 
-  # DELETE /questions/1
+  # DESTROY /questions/1
   def destroy
-    @question.destroy
+      if current_user.admin?
+        @question.destroy
+    else
+        render json: "You dont have permission to destroying this question"
+    end
+  end
+  # DELETE /questions/1
+   def delete
+        if current_user.admin? or current_user == @question.user
+        @question.update_attribute(:deleted, true)
+    else
+        render json: "You dont have permission to deleting this question"
+    end
   end
   
   
@@ -59,13 +71,13 @@ class QuestionsController < ApplicationController
       params.require(:question).permit(:title, :description, :reward, :approved, :reviewed, :solved, :finished, :deleted, :references)
     end
     
-    def increment(attribute, by = 0.0)
+    def increment!(attribute, by = 1.0)
         self[attribute] ||= 0
         self[attribute] += by
         self
     end
     
-    def decrement(attribute, by = 0.0)
+    def decrement!(attribute, by = 1.0)
         self[attribute] ||= 0
         self[attribute] -= by
         self
