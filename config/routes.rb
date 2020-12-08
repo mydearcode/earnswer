@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resources :answers
+  get 'solved_questions', to: 'questions#solved_questions'
   resources :questions do
+      
       resources :answers do
           member do
       patch 'select_best_answer'

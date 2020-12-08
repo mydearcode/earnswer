@@ -7,6 +7,11 @@ class QuestionsController < ApplicationController
 
     render json: @questions
   end
+  
+  def solved_questions
+      @questions = Question.where(solved: true)
+      render json: @questions
+  end
 
   # GET /questions/1
   def show

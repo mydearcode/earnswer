@@ -19,7 +19,7 @@ class AnswersController < ApplicationController
       @answer.user = current_user
 
       if @answer.save
-        render json: @answers, status: :created, location: @question
+        render json: @answer, status: :created, location: @question
       else
         render json: @question.errors, status: :unprocessable_entity
       end
