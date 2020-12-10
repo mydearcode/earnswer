@@ -1,6 +1,6 @@
 class AddBudgetToUser < ActiveRecord::Migration[6.0]
   def change
-    add_column :users, :budget, :decimal(12, 4), default: 5.0
+    add_column :users, :budget, :decimal, precision: 6, scale: 4, default: 0.0
     add_column :users, :approved, :boolean, default: false
     add_column :users, :banned, :boolean, default: false
     add_column :users, :deleted, :boolean, default: false

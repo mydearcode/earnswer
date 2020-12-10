@@ -12,14 +12,13 @@ class AnswersController < ApplicationController
   end
 
   def create
-    @answer = @question.answers.build(answer_params)
+    @answer = @question.answers.new(answer_params)
     @answer.body.strip!
-
+    
     if @answer.body.length > 0
-      @answer.user = current_user
-
+        @answer.user = current_user
       if @answer.save
-        render json: @answer, status: :created, location: @question
+        render json: @question.answers, status: :created, location: @question
       else
         render json: @question.errors, status: :unprocessable_entity
       end
@@ -67,13 +66,28 @@ class AnswersController < ApplicationController
     end
   end
 
+#good answers selection. Only question owner or moderators can do it.
+def good_answer
+    @answer = Answer.find(params[:id])
+    if current_user.role == 2 or current_user == @question.user or current_user.admin?
+        @answer.update_attribute(:good_answer, true)
+        render json: @answer, status: :unprocessable_entity
+    else 
+        render json: "Oopps! Only question owner or moderators can do it", status: :unprocessable_entity
+    end
+end
+
+
+
 private
   def answer_params
-    params.require(:answer).permit(:body, :question_id)
+    params.require(:answer).permit(:body, :question_id, :good_answer)
+    
   end
 
   def load_question
     @question = Question.find(params[:question_id])
   end
+  
   
 end
