@@ -10,7 +10,6 @@ class CreateSurveys < ActiveRecord::Migration[6.0]
       t.boolean :finished, default: false
       t.boolean :deleted, default: false
       t.references :user, null: false, foreign_key: true
-
       t.timestamps
     end
   end

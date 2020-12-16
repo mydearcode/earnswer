@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
   resources :surveys
+  resources :surveys do
+      resources :polls do
+          resources :options
+      end
+  end
+  
     post 'authenticate', to: 'authentication#authenticate'
   #resources :answers
   

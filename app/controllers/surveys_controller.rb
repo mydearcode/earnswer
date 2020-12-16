@@ -4,13 +4,14 @@ class SurveysController < ApplicationController
   # GET /surveys
   def index
     @surveys = Survey.all
-
     render json: @surveys
   end
 
   # GET /surveys/1
   def show
-    render json: @survey
+     #render json: @survey, include: [polls: {only: [:id, :title, include: [options: {only: [:id, :title]}]]}]
+     #render json: @survey.as_json( include: { polls: { only: [:title], {include: :options}}}), status: :ok
+        render json: @survey, only:[:id, :title], include: { polls: { only: [:id, :title], include: { options: { only: [:id, :title] } }}}
   end
 
   # POST /surveys
