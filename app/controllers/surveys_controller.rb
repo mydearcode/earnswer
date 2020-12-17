@@ -43,15 +43,20 @@ class SurveysController < ApplicationController
   # added methods--------------------------------------
   
   def create_response
+
   @survey = Survey.find(params[:survey_id])
-  @response = @survey.responses.new(response_params)
-  @response.user = current_user
+    if @survey.responses.exists?(user: current_user)
+        render json: "You have already participated this Survey", status: :unprocessable_entity
+    else
+        @response = @survey.responses.new(response_params)
+        @response.user = current_user
   
-  if @response.save
-    render json: @survey, status: :created, location: @survey  
-  else
-   render json: @survey.errors, status: :unprocessable_entity   
-  end
+        if @response.save
+         render json: @survey, status: :created, location: @survey  
+        else
+        render json: @survey.errors, status: :unprocessable_entity   
+        end
+    end
   
   end
   
