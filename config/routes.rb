@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
+  
   resources :surveys
   resources :surveys do
-      resources :polls do
-          resources :options
+    post :create_response
+    resources :polls do
+    resources :options
       end
   end
   

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_14_204553) do
+ActiveRecord::Schema.define(version: 2020_12_16_202534) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,17 @@ ActiveRecord::Schema.define(version: 2020_12_14_204553) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["poll_id"], name: "index_options_on_poll_id"
+  end
+
+  create_table "participates", force: :cascade do |t|
+    t.bigint "response_id", null: false
+    t.bigint "poll_id", null: false
+    t.bigint "option_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["option_id"], name: "index_participates_on_option_id"
+    t.index ["poll_id"], name: "index_participates_on_poll_id"
+    t.index ["response_id"], name: "index_participates_on_response_id"
   end
 
   create_table "polls", force: :cascade do |t|
@@ -64,6 +75,15 @@ ActiveRecord::Schema.define(version: 2020_12_14_204553) do
     t.boolean "passed", default: false
     t.boolean "disbursed", default: false
     t.index ["user_id"], name: "index_questions_on_user_id"
+  end
+
+  create_table "responses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "survey_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["survey_id"], name: "index_responses_on_survey_id"
+    t.index ["user_id"], name: "index_responses_on_user_id"
   end
 
   create_table "surveys", force: :cascade do |t|
@@ -100,7 +120,12 @@ ActiveRecord::Schema.define(version: 2020_12_14_204553) do
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "options", "polls"
+  add_foreign_key "participates", "options"
+  add_foreign_key "participates", "polls"
+  add_foreign_key "participates", "responses"
   add_foreign_key "polls", "surveys"
   add_foreign_key "questions", "users"
+  add_foreign_key "responses", "surveys"
+  add_foreign_key "responses", "users"
   add_foreign_key "surveys", "users"
 end

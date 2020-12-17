@@ -21,7 +21,7 @@ class PollsController < ApplicationController
    
 
     if @poll.save
-      render json: @survey, include: [polls: {only: [:id, :title, include: [options: {only: [:id, :title]}]]}], status: :created, location: @survey
+      render json: @survey, only:[:id, :title], include: { polls: { only: [:id, :title], include: { options: { only: [:id, :title] } }}}
     else
       render json: @survey.errors, status: :unprocessable_entity
     end

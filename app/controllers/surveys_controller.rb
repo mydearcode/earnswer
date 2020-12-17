@@ -1,5 +1,6 @@
 class SurveysController < ApplicationController
   before_action :set_survey, only: [:show, :update, :destroy]
+  
 
   # GET /surveys
   def index
@@ -38,6 +39,27 @@ class SurveysController < ApplicationController
   def destroy
     @survey.destroy
   end
+  
+  # added methods--------------------------------------
+  
+  def create_response
+  @survey = Survey.find(params[:survey_id])
+  @response = @survey.responses.new(response_params)
+  @response.user = current_user
+  
+  if @response.save
+    render json: @survey, status: :created, location: @survey  
+  else
+   render json: @survey.errors, status: :unprocessable_entity   
+  end
+  
+  end
+  
+  
+  
+  
+  
+  
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -49,4 +71,19 @@ class SurveysController < ApplicationController
     def survey_params
       params.require(:survey).permit(:title, :description, :user_id, :reward)
     end
+    
+    
+    def response_params
+        params.permit(:survey_id, :user_id, participates_attributes: [:poll_id, :option_id])  
+    end
+    
+  
+  
+  
+
+  
+  
+  
+    
+    
 end
