@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   
+  resources :app_settings
+  get 'app_settings/update'
   resources :surveys
   resources :surveys do
+      put 'publish'
+      put 'finish'
+      put 'disburse'
     post :create_response
     resources :polls do
     resources :options

@@ -1,5 +1,6 @@
 class SurveysController < ApplicationController
   before_action :set_survey, only: [:show, :update, :destroy]
+  #before_action :check_user_limits, only: [:create]
   
 
   # GET /surveys
@@ -17,12 +18,16 @@ class SurveysController < ApplicationController
 
   # POST /surveys
   def create
+      if check_user_limits
     @survey = current_user.surveys.new(survey_params)
 
     if @survey.save
       render json: @survey, status: :created, location: @survey
     else
       render json: @survey.errors, status: :unprocessable_entity
+    end
+    else
+        render json: "Your budget is not enough to create a survey. Please charge your budget", status: :unprocessable_entity
     end
   end
 
@@ -41,6 +46,30 @@ class SurveysController < ApplicationController
   end
   
   # added methods--------------------------------------
+  
+  def publish
+        @survey = Survey.find(params[:survey_id])
+        
+    if @survey.polls.any?
+        @surveyTotalReward = @survey.polls.count * @survey.max_user_limit
+        if @survey.user.budget > @surveyTotalReward
+            @survey.update_attribute(:passed, true)
+            @survey.user.increment!(:freezed_budget, @survey.reward)
+            @survey.user.decrement!(:budget, @survey.reward)
+            render json: "survey is published Successfully", status: :ok
+        else
+            render json: "Your budget is not enough to survey publish", status: :unprocessable_entity
+        end
+    else
+       render json: "Survey must include Polls at least 1", status: :unprocessable_entity  
+    end
+    end
+  
+  
+  
+  
+  
+  # Responses side
   
   def create_response
 
@@ -74,7 +103,7 @@ class SurveysController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def survey_params
-      params.require(:survey).permit(:title, :description, :user_id, :reward)
+      params.require(:survey).permit(:title, :description, :user_id, :reward, :max_user_limit, :max_day_limit)
     end
     
     
@@ -84,11 +113,33 @@ class SurveysController < ApplicationController
     
   
   
-  
+  def increment!(attribute, by = 0.0)
+        self[attribute] ||= 0
+        self[attribute] += by
+        self
+    end
+    
+    def decrement!(attribute, by = 0.0)
+        self[attribute] ||= 0
+        self[attribute] -= by
+        self
+    end
 
+  def check_settings
+      
+      
+  end
   
-  
-  
+  def check_user_limits
+       
+      @appSettings = AppSetting.first
+      @limit = @appSettings.min_reward_per_user * @appSettings.min_user_limit_per_survey
+      @user_budget = current_user.budget
+      @user_budget > @limit
+      
+      
+      
+  end
     
     
 end

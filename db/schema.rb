@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_16_202534) do
+ActiveRecord::Schema.define(version: 2020_12_17_175603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,23 @@ ActiveRecord::Schema.define(version: 2020_12_16_202534) do
     t.boolean "good_answer", default: false
     t.index ["question_id"], name: "index_answers_on_question_id"
     t.index ["user_id"], name: "index_answers_on_user_id"
+  end
+
+  create_table "app_settings", force: :cascade do |t|
+    t.decimal "max_reward_per_user", default: "1000.0"
+    t.decimal "min_reward_per_user", default: "0.1"
+    t.decimal "min_user_limit_per_survey", default: "20.0"
+    t.decimal "max_user_limit_per_survey", default: "100000.0"
+    t.decimal "min_reward_per_question", default: "5.0"
+    t.decimal "max_reward_per_question", default: "1000.0"
+    t.integer "max_onair_day", default: 14
+    t.integer "min_onair_day", default: 1
+    t.integer "withdraw_limit", default: 200
+    t.integer "shop_limit", default: 100
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "max_polls", default: 10
+    t.integer "max_options", default: 8
   end
 
   create_table "options", force: :cascade do |t|
@@ -98,6 +115,10 @@ ActiveRecord::Schema.define(version: 2020_12_16_202534) do
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "passed", default: false
+    t.boolean "disbursed", default: false
+    t.integer "max_user_limit", default: 20
+    t.integer "max_day_limit", default: 14
     t.index ["user_id"], name: "index_surveys_on_user_id"
   end
 

@@ -17,13 +17,15 @@ class PollsController < ApplicationController
   # POST /polls
   def create
        @survey = Survey.find(params[:survey_id])
-    @poll = @survey.polls.new(poll_params)
-   
-
-    if @poll.save
-      render json: @survey, only:[:id, :title], include: { polls: { only: [:id, :title], include: { options: { only: [:id, :title] } }}}
+    if @survey.polls.size < AppSetting.first.max_polls
+        @poll = @survey.polls.new(poll_params)
+        if @poll.save
+            render json: @survey, only:[:id, :title], include: { polls: { only: [:id, :title], include: { options: { only: [:id, :title] } }}}
+        else
+            render json: @survey.errors, status: :unprocessable_entity
+        end
     else
-      render json: @survey.errors, status: :unprocessable_entity
+       render json: "You reached maximum polls limit per Survey (#{AppSetting.first.max_polls}, #{@survey.polls.size})", status: :unprocessable_entity 
     end
   end
 
