@@ -51,12 +51,12 @@ class SurveysController < ApplicationController
         @survey = Survey.find(params[:survey_id])
         
     if @survey.polls.any?
-        @surveyTotalReward = @survey.polls.count * @survey.max_user_limit
+        @surveyTotalReward = (@survey.polls.count * @survey.max_user_limit) * @survey.reward
         if @survey.user.budget > @surveyTotalReward
             @survey.update_attribute(:passed, true)
             @survey.user.increment!(:freezed_budget, @survey.reward)
-            @survey.user.decrement!(:budget, @survey.reward)
-            render json: "survey is published Successfully", status: :ok
+            @survey.user.decrement!(:budget, @surveyTotalReward)
+            render json: "survey is published Successfully #{@surveyTotalReward}", status: :ok
         else
             render json: "Your budget is not enough to survey publish", status: :unprocessable_entity
         end

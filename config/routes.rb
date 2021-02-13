@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   
+  resources :activities
   resources :app_settings
   get 'app_settings/update'
   resources :surveys

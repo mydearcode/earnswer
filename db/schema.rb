@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_17_175603) do
+ActiveRecord::Schema.define(version: 2020_12_17_201635) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activities", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "subject"
+    t.string "act_name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "subject_id"
+    t.index ["user_id"], name: "index_activities_on_user_id"
+  end
 
   create_table "answers", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -138,6 +148,7 @@ ActiveRecord::Schema.define(version: 2020_12_17_175603) do
     t.decimal "freezed_budget", precision: 6, scale: 4, default: "0.0"
   end
 
+  add_foreign_key "activities", "users"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "options", "polls"
